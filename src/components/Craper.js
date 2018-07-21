@@ -11,12 +11,16 @@ class Craper extends Component {
       err: undefined,
       pageNumber: 0,
       category: undefined,
+      lsCate: [],
     }
   }
 
   componentWillMount() {
-    axios.get('http://localhost:3001/book?offset=1').then(res => {
-      this.setState({ data: res.data, loading: false })
+    axios.get('http://localhost:3001/book?offset=1&init=true').then(res => {
+      this.setState({ data: res.data, loading: false });
+      if (!this.state.lsCate.length) {
+        this.setState({ lsCate: res.data.category });
+      }
     }).catch(e => {
       this.setState({ err: 'Has error' });
     });
@@ -43,7 +47,7 @@ class Craper extends Component {
   }
 
   onHandleSelect(e) {
-    this.setState({ category: e.target.value });
+    this.setState({ category: e.target.value, init: false });
   }
 
   render() {
@@ -63,7 +67,7 @@ class Craper extends Component {
             />
             <select onChange={(e) => this.onHandleSelect(e)}>
               {
-                data.category.map((c, i) => (
+                this.state.lsCate.map((c, i) => (
                   <option key={i} value={c.url}>{c.cateName}</option>
                 ))
               }
